@@ -39,5 +39,6 @@ Content-Type: image/png
 
 EOHEADER
   cat "$TMP"
+  rm "$TMP"
 } | netcat $HOST 80 1>/dev/null
 
