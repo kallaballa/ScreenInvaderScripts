@@ -1,0 +1,41 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+  echo "Usage: postCast <host>"
+  exit 1
+fi
+
+if ! type ffmpeg &>/dev/null; then
+  echo "You need to install ffmpeg"
+  exit 1
+fi
+
+if ! type netcat &>/dev/null; then
+  echo "You need to install netcat"
+  exit 1
+fi
+
+HOST="$1"
+{ 
+  cat<<EOHEADER
+POST /cgi-bin/uploadstream HTTP/1.1
+User-Agent: postCast
+Host: $HOST
+Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
+Accept-Language: en-US,en;q=0.9
+Accept-Encoding: gzip, deflate
+Referer: http://10.20.30.51/
+Connection: Keep-Alive
+Content-Length: 4294967296
+Content-Type: multipart/form-data; boundary=----------mSW1oHw5brtEe0jxj0284x
+
+------------mSW1oHw5brtEe0jxj0284x
+Content-Disposition: form-data; name="Datei"; filename="screenshot.png"
+Content-Type: video/h264
+
+EOHEADER
+
+  RES="`xrandr -q | grep -Po ' connected \K([0-9]*x[0-9]*)(?=\+)'`"
+  ffmpeg -f x11grab -s 1600x900 -r 24 -i :0.0 -vcodec libx264 -crf 22 -threads 0 -f rawvideo -
+} | netcat $HOST 80 1>/dev/null
+
