@@ -24,13 +24,13 @@ Host: $HOST
 Accept: text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/webp, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1
 Accept-Language: en-US,en;q=0.9
 Accept-Encoding: gzip, deflate
-Referer: http://10.20.30.51/
+Referer: http://$HOST/
 Connection: Keep-Alive
 Content-Length: 4294967296
 Content-Type: multipart/form-data; boundary=----------mSW1oHw5brtEe0jxj0284x
 
 ------------mSW1oHw5brtEe0jxj0284x
-Content-Disposition: form-data; name="Datei"; filename="screenshot.png"
+Content-Disposition: form-data; name="Datei"; filename="screencast.mp4"
 Content-Type: video/h264
 
 EOHEADER
