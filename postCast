@@ -36,6 +36,6 @@ Content-Type: video/h264
 EOHEADER
 
   RES="`xrandr -q | grep -Po ' connected \K([0-9]*x[0-9]*)(?=\+)'`"
-  ffmpeg -f x11grab -s $RES -r 24 -i :0.0 -vcodec libx264 -crf 22 -threads 0 -f rawvideo -
+  gst-launch-0.10 -v  ximagesrc ! ffmpegcolorspace ! ffenc_mpeg4 ! filesink location=/dev/stdout
 } | netcat $HOST 80 1>/dev/null
 
