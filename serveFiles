@@ -36,6 +36,7 @@ addr="`wget -q -O - http://$host/cgi-bin/echoRemoteAddr`"
 fcmd="find $opts -type f"
 
 set -f
+i=0
 for ext in $extensions; do
   [ $i -gt 0 ] && fcmd="$fcmd -o"
   fcmd="$fcmd"' -iname *.'$ext
