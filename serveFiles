@@ -1,0 +1,55 @@
+#!/bin/bash
+
+RECURSIVE=""
+while getopts 'r' c
+do
+  case $c in
+    r) RECURSIVE="YES";;
+  esac
+done
+
+shift $(($OPTIND - 1))
+
+function l_urlencode() {
+ echo "$1" | sed 's/ /%20/g;s/!/%21/g;s/"/%22/g;s/#/%23/g;s/\$/%24/g;s/\&/%26/g;s/'\''/%27/g;s/(/%28/g;s/)/%29/g;s/:/%3A/g'
+}
+
+if [ $# -ne 1 ]; then
+  echo "Usage: serveFiles <-r> <host>"
+  exit 1
+fi
+
+if ! type python &>/dev/null; then
+  echo "You need to install python"
+  exit 1
+fi
+
+set -x
+extensions="mp3 wav ogg flac ac3 mp4 mpeg4 avi mkv mpg mpeg"
+host=$1
+shift
+
+opts=""
+[ -z "$RECURSIVE" ] && opts="-maxdepth 1"
+
+addr="`wget -q -O - http://$host/cgi-bin/echoRemoteAddr`"
+
+fcmd="find $opts -type f"
+
+set -f
+for ext in $extensions; do
+  [ $i -gt 0 ] && fcmd="$fcmd -o"
+  fcmd="$fcmd"' -iname *.'$ext
+  i=$[ $i + 1 ]
+done
+ 
+$fcmd | while read file; do 
+  echo http://$addr:8000/$(l_urlencode "$file"); 
+done > playlist.m3u
+
+set -m
+python -m SimpleHTTPServer &
+sleep 1
+wget -q -O /dev/null http://$host/cgi-bin/show?http://$addr:8000/playlist.m3u
+fg
+
